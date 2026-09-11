@@ -43,6 +43,10 @@ web: ## Run the frontend command center (http://localhost:3000)
 demo: ## Run a full headless campaign and print a report
 	$(VENV)/bin/dracarys demo
 
+.PHONY: demo-sites
+demo-sites: ## Serve the three testbed targets on :8901 :8902 :8903 for a live demo
+	$(VENV)/bin/python scripts/demo_sites.py
+
 .PHONY: eval
 eval: ## Run a campaign and score it against ground truth
 	$(VENV)/bin/dracarys eval
