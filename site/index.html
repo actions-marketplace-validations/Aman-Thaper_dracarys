@@ -108,8 +108,8 @@ dracarys scan https://staging.example.com --yes-i-am-authorized \
     <div class="stats">
       <div class="stat"><b>1.0</b><span>recall on independent testbed apps</span></div>
       <div class="stat"><b>0</b><span>false positives on the hardened control</span></div>
-      <div class="stat"><b>80</b><span>tests, ~85% coverage</span></div>
-      <div class="stat"><b>8</b><span>detector classes, all CWE-mapped</span></div>
+      <div class="stat"><b>83</b><span>tests, ~85% coverage</span></div>
+      <div class="stat"><b>11</b><span>detector classes, all CWE-mapped</span></div>
     </div>
     <p style="margin-top:18px">These are not claims about the bundled demo. <code>dracarys scan-selftest</code>
       runs the scanner against independent vulnerable applications it was not tuned on, plus a
@@ -155,7 +155,10 @@ dracarys scan https://staging.example.com --yes-i-am-authorized \
       <tr><td>SQL injection</td><td class="cwe">CWE-89</td><td>A database error signature absent from the baseline, a boolean TRUE/FALSE divergence, or a time delay that dominates a control request.</td></tr>
       <tr><td>Reflected XSS</td><td class="cwe">CWE-79</td><td>A unique payload reflected <em>unencoded</em> in an HTML response.</td></tr>
       <tr><td>IDOR / BOLA</td><td class="cwe">CWE-639</td><td>A second identity fetches another user's object and the content matches the owner's.</td></tr>
+      <tr><td>Path traversal</td><td class="cwe">CWE-22</td><td>A traversal payload returns the contents of a system file that the baseline response did not contain.</td></tr>
+      <tr><td>Server-side template injection</td><td class="cwe">CWE-1336</td><td>An injected expression is evaluated server-side to its computed result, and the literal payload is gone.</td></tr>
       <tr><td>Open redirect</td><td class="cwe">CWE-601</td><td>A parameter drives a 30x <code>Location</code> to an attacker-controlled host.</td></tr>
+      <tr><td>CORS misconfiguration</td><td class="cwe">CWE-942</td><td>An untrusted <code>Origin</code> is reflected in <code>Access-Control-Allow-Origin</code> together with <code>Allow-Credentials: true</code>.</td></tr>
       <tr><td>Exposed files &amp; secrets</td><td class="cwe">CWE-538/200</td><td>A sensitive path returns recognizable content, or a body matches a secret pattern.</td></tr>
       <tr><td>Security misconfiguration</td><td class="cwe">CWE-16</td><td>Missing CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy; version disclosure.</td></tr>
       <tr><td>Verbose error disclosure</td><td class="cwe">CWE-209</td><td>Stack traces or database error text in ordinary responses.</td></tr>
@@ -184,8 +187,8 @@ dracarys scan https://staging.example.com --yes-i-am-authorized \
     <div class="note">
       <p><strong>What it is:</strong> a real but early-stage lightweight DAST — evidence-first,
       low false positives, SARIF/CI-native, with verified-fix retesting.
-      <strong>What it is not:</strong> a Burp or ZAP replacement. Coverage is the core eight classes
-      above; SSRF, CSRF, path traversal and SSTI are not implemented yet.</p>
+      <strong>What it is not:</strong> a Burp or ZAP replacement. Coverage is the eleven classes
+      above; SSRF, CSRF and authentication/session weaknesses are not implemented yet.</p>
       <p style="margin:12px 0 0"><strong>Authorization:</strong> payloads are non-destructive by contract —
       read-only SQL, benign markers, short sleeps. Loopback targets scan freely; any other host is
       refused unless you explicitly assert you are authorized to test it. Only scan systems you have

@@ -33,12 +33,17 @@ async def test_blog_app_detected():
     res = await _scan(build_blog_app(), "http://127.0.0.1:8888",
                       ScanConfig(active=True, include_time_based=False))
     cats = {f.category.value for f in res.findings}
-    assert {"sql_injection", "xss", "open_redirect", "exposed_resource",
-            "sensitive_data", "security_misconfig"} <= cats
+    assert {"sql_injection", "xss", "open_redirect", "path_traversal", "ssti",
+            "exposed_resource", "sensitive_data", "security_misconfig"} <= cats
     sqli = next(f for f in res.findings if f.category.value == "sql_injection")
     assert sqli.param == "id" and sqli.cwe == "CWE-89"
     xss = next(f for f in res.findings if f.category.value == "xss")
     assert xss.param == "q" and all(e.exchange for e in xss.evidence)
+    trav = next(f for f in res.findings if f.category.value == "path_traversal")
+    assert trav.param == "file" and trav.cwe == "CWE-22"
+    assert len(trav.evidence) == 2  # baseline + traversal payload
+    ssti = next(f for f in res.findings if f.category.value == "ssti")
+    assert ssti.param == "name" and ssti.cwe == "CWE-1336"
 
 
 async def test_api_app_detected():
@@ -48,9 +53,12 @@ async def test_api_app_detected():
                                  second_identity_headers={"Authorization": "Bearer tok-user2"},
                                  protected_urls=["http://127.0.0.1:8889/api/v2/notes/1001"]))
     cats = {f.category.value for f in res.findings}
-    assert {"sql_injection", "sensitive_data", "idor", "info_disclosure"} <= cats
+    assert {"sql_injection", "sensitive_data", "idor", "info_disclosure",
+            "cors_misconfig"} <= cats
     sqli = next(f for f in res.findings if f.category.value == "sql_injection")
     assert sqli.param == "filter"  # boolean-based, discovered via OpenAPI import
+    cors = next(f for f in res.findings if f.category.value == "cors_misconfig")
+    assert cors.cwe == "CWE-942" and "dcrs-evil.example" in cors.detail
 
 
 async def test_safe_app_no_false_positives():
@@ -63,6 +71,9 @@ async def test_safe_app_no_false_positives():
     assert "open_redirect" not in cats
     assert "idor" not in cats
     assert "exposed_resource" not in cats
+    assert "path_traversal" not in cats
+    assert "ssti" not in cats
+    assert "cors_misconfig" not in cats
 
 
 async def test_passive_only_mode_skips_injection():

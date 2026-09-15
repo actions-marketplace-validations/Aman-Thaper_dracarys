@@ -80,6 +80,9 @@ class VulnCategory(str, Enum):
     SENSITIVE_DATA = "sensitive_data"
     EXPOSED_RESOURCE = "exposed_resource"
     VERBOSE_ERROR = "verbose_error"
+    PATH_TRAVERSAL = "path_traversal"
+    SSTI = "ssti"                       # server-side template injection
+    CORS_MISCONFIG = "cors_misconfig"
 
 
 class HypothesisStatus(str, Enum):

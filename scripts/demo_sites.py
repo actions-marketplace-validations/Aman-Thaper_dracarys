@@ -6,9 +6,11 @@ Three deliberately different targets come up at once so you can point the scanne
 at each in turn and watch the findings change:
 
     :8901  DevBlog   HTML app   — error-based SQLi, reflected XSS, open redirect,
+                                  path traversal, server-side template injection,
                                   exposed .env leaking an AWS key, missing headers
     :8902  NotesAPI  JSON API   — boolean-based SQLi, leaked JWT, exposed OpenAPI
-                                  schema, IDOR (needs two identities)
+                                  schema, IDOR (needs two identities), CORS that
+                                  reflects any origin with credentials
     :8903  Fort      hardened   — the control. Should report nothing at all.
 
 All three are loopback, so no authorization flag is needed. The data is synthetic

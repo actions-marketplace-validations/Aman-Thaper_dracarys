@@ -71,7 +71,7 @@ and scores:
 
 | Metric | Meaning | Current |
 |---|---|---|
-| `recall` | ground-truth vuln classes detected ÷ expected, across the fixture apps | **1.0** (10/10) |
+| `recall` | ground-truth vuln classes detected ÷ expected, across the fixture apps | **1.0** (13/13) |
 | `false_positives_safe` | serious findings raised against a **hardened control** app | **0** |
 | `per_app` | expected / found / missed per app | all classes found |
 

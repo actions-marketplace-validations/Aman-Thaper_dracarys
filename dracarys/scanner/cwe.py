@@ -16,6 +16,9 @@ CWE: dict[VulnCategory, str] = {
     VulnCategory.CREDENTIAL_EXPOSURE: "CWE-522",
     VulnCategory.BROKEN_AUTH: "CWE-287",
     VulnCategory.PRIVILEGE_ESCALATION: "CWE-269",
+    VulnCategory.PATH_TRAVERSAL: "CWE-22",
+    VulnCategory.SSTI: "CWE-1336",
+    VulnCategory.CORS_MISCONFIG: "CWE-942",
 }
 
 REMEDIATION: dict[VulnCategory, str] = {
@@ -55,6 +58,21 @@ REMEDIATION: dict[VulnCategory, str] = {
         "Do not expose internal detail to unauthenticated clients; gate diagnostics "
         "behind authentication and strip sensitive fields."
     ),
+    VulnCategory.PATH_TRAVERSAL: (
+        "Never build filesystem paths from user input. Resolve the candidate path and "
+        "verify it stays inside the intended directory, or map the input to an "
+        "allowlist of known filenames."
+    ),
+    VulnCategory.SSTI: (
+        "Never pass user input to a template engine as template source. Render "
+        "untrusted values as data through the engine's context/variables, and use a "
+        "sandboxed or logic-less template for any user-supplied template."
+    ),
+    VulnCategory.CORS_MISCONFIG: (
+        "Do not reflect arbitrary Origin headers. Serve "
+        "Access-Control-Allow-Credentials: true only alongside an explicit allowlist "
+        "of trusted origins, and never together with a wildcard or a 'null' origin."
+    ),
 }
 
 DEFAULT_SEVERITY: dict[VulnCategory, Severity] = {
@@ -67,6 +85,9 @@ DEFAULT_SEVERITY: dict[VulnCategory, Severity] = {
     VulnCategory.EXPOSED_RESOURCE: Severity.HIGH,
     VulnCategory.SECURITY_MISCONFIG: Severity.LOW,
     VulnCategory.INFO_DISCLOSURE: Severity.MEDIUM,
+    VulnCategory.PATH_TRAVERSAL: Severity.HIGH,
+    VulnCategory.SSTI: Severity.CRITICAL,
+    VulnCategory.CORS_MISCONFIG: Severity.MEDIUM,
 }
 
 

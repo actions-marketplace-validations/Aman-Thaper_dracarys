@@ -25,7 +25,8 @@ authorized HTTP target and it will:
 4. Emit findings as **SARIF** (GitHub Security tab), **HTML**, **JSON**, or **Markdown**.
 
 Detected classes today: **SQL injection** (error / boolean / time based), **reflected XSS**,
-**broken object-level authorization (IDOR)**, **open redirect**, **exposed files & secrets**
+**broken object-level authorization (IDOR)**, **path traversal**, **server-side template
+injection**, **open redirect**, **CORS misconfiguration**, **exposed files & secrets**
 (`.env`, `.git`, keys, tokens, JWTs), **security misconfiguration** (missing headers),
 **verbose errors / info disclosure**, and **exposed API schemas**. `CWE`-mapped.
 
@@ -44,7 +45,7 @@ apps they were never written for**:
 
 ```bash
 dracarys scan-selftest
-# recall 1.0 (10/10 vuln classes across two different apps) · 0 false positives on a hardened control · PASS ✓
+# recall 1.0 (13/13 vuln classes across two different apps) · 0 false positives on a hardened control · PASS ✓
 ```
 
 Honest scope: DRACARYS is a focused, safe, evidence-first **lightweight DAST** — not a

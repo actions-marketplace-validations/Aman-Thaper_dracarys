@@ -32,6 +32,7 @@ class Scanner:
         log.info("scan_start", target=ctx.base_url, active=ctx.config.active)
 
         templates, baselines = await Crawler(ctx).crawl()
+        ctx.templates, ctx.baselines = templates, baselines
         result.pages_crawled = len(baselines)
         result.templates = len(templates)
 
