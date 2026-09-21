@@ -4,7 +4,7 @@
 > the project is, how it's built, how to run it, the non-obvious decisions and gotchas,
 > and what's left to do. Detailed docs: README, USAGE, ARCHITECTURE, SECURITY, EVALUATION.
 
-_Last updated: 2026-08-26. Current version: **0.1.2**._
+_Last updated: 2026-09-16. Current version: **0.1.3**._
 
 ---
 
@@ -24,7 +24,7 @@ positives, SARIF/CI-native, plus verified-fix retesting. NOT a Burp/ZAP replacem
 
 ## 2. Status (as of last update)
 
-- ✅ Generic scanner engine + 8 detector classes, proven to generalize.
+- ✅ Generic scanner engine + **11 detector classes**, proven to generalize.
 - ✅ `dracarys scan` CLI (auth gate, safe payloads, severity exit codes, multi-format reports).
 - ✅ SARIF 2.1.0 output; GitHub Marketplace **Action** (`action.yml`, Docker) + example workflow.
 - ✅ `POST /api/scan` HTTP endpoint.
@@ -33,15 +33,15 @@ positives, SARIF/CI-native, plus verified-fix retesting. NOT a Burp/ZAP replacem
 - ✅ Verified-remediation campaign loop against the bundled DRACARYS BANK lab (attack graph,
   remediation, patched rebuild, retest → FIX VERIFIED).
 - ✅ Next.js command center (visual, real-time) for the lab campaign.
-- ✅ Quality: **80 tests**, ~85% coverage, `ruff` clean, `mypy` clean (66 files).
+- ✅ Quality: **83 tests**, ~85% coverage, `ruff` clean, `mypy` clean (67 files).
   ~7,200 LOC Python + ~1,200 LOC TypeScript (command center + extension).
-- ✅ **Shipped:** public repo `Aman-Thaper/dracarys`, releases v0.1.0/v0.1.1/**v0.1.2**,
-  moving tag `v0` → v0.1.2. **GitHub Marketplace listing is LIVE**
+- ✅ **Shipped:** public repo `Aman-Thaper/dracarys`, releases v0.1.0/v0.1.1/v0.1.2/**v0.1.3**,
+  moving tag `v0` → v0.1.3. **GitHub Marketplace listing is LIVE**
   (github.com/marketplace/actions/dracarys-dast-scan). Landing page live on GitHub Pages.
 - ⛔ NOT done: **PyPI upload still failing** (see §10); VS Code Marketplace not published
   (needs a publisher + PAT; the .vsix is attached to each release meanwhile); scanner results
-  not surfaced in the web UI; no background/async scan jobs; detector coverage is the
-  "core 8" (no SSRF/CORS/CSRF/auth-session yet). See §9 Roadmap.
+  not surfaced in the web UI; no background/async scan jobs; detector coverage is 11 classes
+  (no SSRF/CSRF/auth-session yet). See §9 Roadmap.
 
 ## 3. Environment constraints (IMPORTANT, non-obvious)
 
@@ -151,13 +151,16 @@ docs/ + *.md                 README, USAGE, ARCHITECTURE, SECURITY, EVALUATION, 
 | SQL injection | CWE-89 | DB error signature (absent in baseline) · boolean TRUE≈baseline & FALSE diverges (multi-context payloads incl. `LIKE '%..%'`) · time sleep dominates a control |
 | Reflected XSS | CWE-79 | unique HTML payload reflected **unencoded** in a `text/html` response |
 | IDOR / BOLA | CWE-639 | 2nd identity fetches another user's object with content ≈ owner's (needs `--second-auth` + `--protected-url`) |
+| Path traversal | CWE-22 | traversal payload returns system-file content (`root:x:0:`, win.ini) **absent from the baseline** |
+| SSTI | CWE-1336 | injected `{{191*7}}`/`${…}`/`<%= … %>` is evaluated to `1337` **and** the literal payload is gone |
 | Open redirect | CWE-601 | redirect-ish param drives a 30x `Location` to an attacker host (params inspected only) |
+| CORS misconfig | CWE-942 | untrusted `Origin` reflected in `Access-Control-Allow-Origin` **with** `Allow-Credentials: true` (wildcard w/o creds is never reported) |
 | Exposed files/secrets | CWE-538/200 | sensitive path returns recognizable content, or a body matches a secret regex (AWS/JWT/GH/Stripe/private keys/…) |
 | Security misconfig | CWE-16 | missing CSP/HSTS/X-Content-Type-Options/X-Frame-Options/Referrer-Policy; version disclosure |
 | Verbose/info disclosure | CWE-209/200 | stack traces / DB error text in normal responses |
 | Exposed API schema | CWE-200 | `/openapi.json` etc. served publicly |
 
-Testbed proof: blog app (HTML) + api app (JSON) — **recall 1.0 (10/10)**, **0 false positives**
+Testbed proof: blog app (HTML) + api app (JSON) — **recall 1.0 (13/13)**, **0 false positives**
 on the hardened `safe` app. Gated by `dracarys scan-selftest` and `tests/integration/test_scanner.py`.
 
 ## 8. Key decisions & gotchas (save future-you time)
@@ -195,8 +198,9 @@ on the hardened `safe` app. Gated by `dracarys scan-selftest` and `tests/integra
    does the rest. Open VSX is the lower-friction alternative via `OVSX_PAT`.
 
 **Product depth (safe, high-value next):**
-5. More detectors: SSRF (OOB callback), CORS misconfig, CSRF token checks, auth/session
-   weaknesses, verbose-JSON PII, path traversal, SSTI. Each = oracle + testbed case + test.
+5. ~~Path traversal, SSTI, CORS misconfig~~ ✅ done in 0.1.3. Still open: SSRF (needs an OOB
+   callback host), CSRF token checks, auth/session weaknesses, verbose-JSON PII.
+   Each = oracle + testbed case + ground truth + test.
 6. Background/async scan jobs + a `Scan`/`ScanFinding` persistence model (currently `/api/scan`
    is synchronous) so large scans and history work; surface scans in the web UI.
 7. Wire arbitrary (non-lab) targets into the campaign so scanner findings flow into the

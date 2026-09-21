@@ -36,6 +36,16 @@ STACK_TRACES = [
 ]
 _STACK_RE = re.compile("|".join(STACK_TRACES), re.IGNORECASE)
 
+# --- path traversal: contents only a real system file would have ---------
+TRAVERSAL_SIGNATURES = [
+    r"root:x:\d*:\d*:",                      # /etc/passwd
+    r"daemon:x:\d*:\d*:",
+    r"\[(extensions|fonts|mci extensions)\]",  # win.ini
+    r"# localhost name resolution",           # windows hosts file
+    r"\[boot loader\]",                       # boot.ini
+]
+_TRAVERSAL_RE = re.compile("|".join(TRAVERSAL_SIGNATURES), re.IGNORECASE)
+
 # --- secret patterns (sensitive data exposure) ---------------------------
 SECRET_PATTERNS: list[tuple[str, str]] = [
     ("AWS access key id", r"AKIA[0-9A-Z]{16}"),
@@ -58,6 +68,43 @@ def sql_error_signature(text: str) -> str | None:
 def stack_trace_signature(text: str) -> str | None:
     m = _STACK_RE.search(text or "")
     return m.group(0) if m else None
+
+
+def traversal_signature(text: str) -> str | None:
+    """Path-traversal oracle: content that only a real system file would contain."""
+    m = _TRAVERSAL_RE.search(text or "")
+    return m.group(0) if m else None
+
+
+def template_evaluated(expected: str, payload: str, exchange: HttpExchange) -> bool:
+    """SSTI oracle: the expression was *computed* server-side, not echoed.
+
+    The evaluated result must be present while the literal payload text must be
+    gone — a reflected-but-unevaluated payload therefore never fires.
+    """
+    body = exchange.body_text or ""
+    return expected in body and payload not in body
+
+
+def cors_permissive(origin: str, exchange: HttpExchange) -> str | None:
+    """CORS oracle: credentialed cross-origin access granted to an untrusted origin.
+
+    Returns a human-readable reason, or None. A wildcard ACAO *without* credentials
+    is deliberately not reported: it is normal for public APIs and cannot be used to
+    read an authenticated response.
+    """
+    headers = {k.lower(): v for k, v in (exchange.response.get("headers", {}) or {}).items()}
+    acao = (headers.get("access-control-allow-origin") or "").strip()
+    creds = (headers.get("access-control-allow-credentials") or "").strip().lower() == "true"
+    if not acao or not creds:
+        return None
+    if acao == origin:
+        return f"reflected the request Origin ({origin})"
+    if acao.lower() == "null":
+        return "allowed the 'null' origin"
+    if acao == "*":
+        return "combined a wildcard origin with credentials"
+    return None
 
 
 def find_secrets(text: str) -> list[tuple[str, str]]:

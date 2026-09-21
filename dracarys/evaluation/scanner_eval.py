@@ -14,7 +14,8 @@ from dracarys.engine.policy import PolicyEngine, Scope
 from dracarys.scanner import ScanConfig, Scanner
 from dracarys.tools import HttpTool
 
-SERIOUS = {"sql_injection", "xss", "open_redirect", "idor", "exposed_resource"}
+SERIOUS = {"sql_injection", "xss", "open_redirect", "idor", "exposed_resource",
+           "path_traversal", "ssti", "cors_misconfig"}
 
 
 @dataclass

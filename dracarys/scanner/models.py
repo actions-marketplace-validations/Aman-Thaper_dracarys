@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from dracarys.agents.context import LabeledExchange
 from dracarys.domain.enums import Confidence, Severity, VulnCategory
 from dracarys.tools import HttpTool
+from dracarys.tools.base import HttpExchange
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,10 @@ class ScanContext:
     base_url: str
     config: ScanConfig
     run_id: str = field(default_factory=lambda: _secrets.token_hex(4))
+    # Discovered surface, populated by the engine after the crawl so that
+    # site-level detectors can work against real URLs rather than just base_url.
+    templates: list[RequestTemplate] = field(default_factory=list)
+    baselines: list[tuple[str, HttpExchange]] = field(default_factory=list)
 
     def marker(self, tag: str = "") -> str:
         return f"dcrs{self.run_id}{tag}{_secrets.token_hex(3)}"

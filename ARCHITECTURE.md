@@ -141,8 +141,9 @@ Scanner.scan()
 ```
 
 - **Oracles** (`scanner/oracles.py`) are the deterministic heart — SQL error signatures,
-  boolean divergence, time-delay-with-control, unencoded-reflection, secret regexes,
-  response similarity. A detector reports a finding only when an oracle fires.
+  boolean divergence, time-delay-with-control, unencoded-reflection, system-file content
+  signatures, server-side expression evaluation, credentialed cross-origin reflection,
+  secret regexes, response similarity. A detector reports a finding only when an oracle fires.
 - **Detectors** (`scanner/detectors/`) come in three shapes: response (passive), param
   (active), and site. Adding a detector is a small, isolated unit (see DEVELOPMENT.md).
 - **Safety** is inherited from the same policy engine used by the lab modules: every

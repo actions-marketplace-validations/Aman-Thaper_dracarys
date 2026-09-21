@@ -26,9 +26,10 @@ If `dracarys` is not on your `PATH`, set `dracarys.executable` to its full path.
 
 ## What it detects
 
-SQL injection (error, boolean, and time based), reflected XSS, IDOR/BOLA, open redirect,
-exposed files and secrets, security misconfiguration, verbose error disclosure, and exposed
-API schemas — all CWE-mapped, each with remediation guidance.
+SQL injection (error, boolean, and time based), reflected XSS, IDOR/BOLA, path traversal,
+server-side template injection, open redirect, CORS misconfiguration, exposed files and
+secrets, security misconfiguration, verbose error disclosure, and exposed API schemas —
+all CWE-mapped, each with remediation guidance.
 
 ## Authorization
 

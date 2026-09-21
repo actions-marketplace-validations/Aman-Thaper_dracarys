@@ -57,9 +57,11 @@ dracarys scan https://example.com --yes-i-am-authorized --passive --fail-on none
 
 ### What it detects
 SQL injection (error/boolean/time), reflected XSS, IDOR/BOLA (with two identities),
-open redirect, exposed files & secrets (`.env`, `.git`, keys, tokens, JWTs, DB dumps,
-actuator), missing security headers, verbose errors / DB error disclosure, and exposed
-API schemas. Every finding is CWE-mapped and carries request/response evidence.
+path traversal, server-side template injection, open redirect, CORS misconfiguration
+(reflected origin with credentials), exposed files & secrets (`.env`, `.git`, keys,
+tokens, JWTs, DB dumps, actuator), missing security headers, verbose errors / DB error
+disclosure, and exposed API schemas. Every finding is CWE-mapped and carries
+request/response evidence.
 
 ## `dracarys scan-selftest` — prove it generalizes
 ```bash

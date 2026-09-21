@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.3
+Detector coverage: three new vulnerability classes, each with a deterministic oracle.
+The generalization scorecard goes from 10/10 to **13/13 at recall 1.0**, still with
+**0 false positives** on the hardened control app.
+
+- **Path traversal** (CWE-22): a traversal payload returns the contents of a system file
+  that the baseline response did not contain. Probes are read-only GETs.
+- **Server-side template injection** (CWE-1336): an injected expression is evaluated
+  server-side to its computed result *and* the literal payload is absent — so a payload
+  that is merely reflected can never be reported as SSTI.
+- **CORS misconfiguration** (CWE-942): an untrusted `Origin` is reflected into
+  `Access-Control-Allow-Origin` together with `Access-Control-Allow-Credentials: true`.
+  A wildcard origin *without* credentials is deliberately not reported — it is normal for
+  public APIs and cannot be used to read an authenticated response.
+- The testbed apps grew matching vulnerable endpoints (and the hardened control grew
+  hardened counterparts), so the new detectors are scored against apps they were not
+  written for. Traversal in the fixtures resolves against a simulated filesystem and
+  never touches the real disk.
+- Site-level detectors can now see the crawled surface (`ScanContext.templates` /
+  `.baselines`), not just the base URL.
+- 83 tests, ~85% coverage.
+
 ## 0.1.2
 Distribution surfaces: the scanner is now reachable from an editor, an agent, and the web.
 
