@@ -23,3 +23,7 @@ editors/vscode/out/
 editors/vscode/*.vsix
 # OS
 .DS_Store
+# Scan output
+report.html
+# Claude Code local state (worktrees, session settings)
+.claude/
